@@ -28,10 +28,12 @@
 <div class="reveal">
     <div class="slides">
         <section>
-            <h2>Fullstack in Webanwendungen am Beispiel von WebWIB</h2>
+            <h2>Fullstack in Webanwendungen</h2>
+            <p>https://www.wordclouds.com/</p>
         </section>
         <section>
             <h3>Fullstack?</h3>
+            <p class="fragment">https://www.wordclouds.com/</p>
             <aside class="notes">
                 Notizen
             </aside>
@@ -39,22 +41,43 @@
         <section>
             <h3>Überblick</h3>
             <section>
-                <p class="fragment">https://www.wordclouds.com/</p>
-                <img src="./images/01.png">
+                <p class="fragment"><img src="./images/01.png"></p>
             </section>
         </section>
         <section>
-            <h3>Frontend</h3>
             <section>
-                <h3>Angular</h3>
-                <p class="fragment">Test</p>
+                <h3>Angular (& TypeScript)</h3>
+                <p class="fragment"><img src="./images/02.png"></p>
+            </section>
+            <section>
+                <h1>RoutingModule</h1>
+                <p class="fragment">Zeigt zu der zugehörigen URL die passende Komponente an</p>
+                <p class="fragment">Überprüft Zugriffsrecht</p>
+                <p class="fragment">Leitet ggf. weiter</p>
+            </section>
+            <section>
+                <h3>RoutingModule</h3>
+                <pre><code data-trim data-noescape>
+const appRoutes: Routes = [
+  { path: 'crisis-center', component: CrisisListComponent },
+  { path: 'user/:id',      component: UserDetailComponent },
+  {
+    path: 'users',
+    component: UsersListComponent,
+    data: { title: 'Users List' }
+  },
+  { path: '',
+    redirectTo: '/user',
+    pathMatch: 'full'
+  },
+  { path: '**', component: PageNotFoundComponent }
+];
+                </code></pre>
             </section>
             <section>
                 <h3>Angular != UI</h3>
-                <p>Was bietet Angular dann?</p>
                 <p>--> https://angular.io/guide/architecture</p>
                 <p>TypeScript</p>
-                <p>Module</p>
                 <p>Komponenten</p>
                 <p>Templates, (directives), data-binding</p>
                 <p>Services & Dependency Injection</p>
