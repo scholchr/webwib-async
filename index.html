@@ -8,7 +8,7 @@
     <title>FullStack WebDev</title>
 
     <link rel="stylesheet" href="css/reveal.css">
-    <link rel="stylesheet" href="css/theme/white.css">
+    <link rel="stylesheet" href="css/theme/black.css">
     <link rel="stylesheet" href="css/custom.css">
 
     <!-- Theme used for syntax highlighting of code -->
@@ -33,7 +33,7 @@
         </section>
         <section>
             <h3>Fullstack?</h3>
-            <p class="fragment">https://www.wordclouds.com/</p>
+            <p class="fragment">SO Survey 2018</p>
             <aside class="notes">
                 Notizen
             </aside>
@@ -58,44 +58,146 @@
             <section>
                 <h3>RoutingModule</h3>
                 <pre><code data-trim data-noescape>
-const appRoutes: Routes = [
-  { path: 'crisis-center', component: CrisisListComponent },
-  { path: 'user/:id',      component: UserDetailComponent },
-  {
-    path: 'users',
-    component: UsersListComponent,
-    data: { title: 'Users List' }
-  },
-  { path: '',
-    redirectTo: '/user',
-    pathMatch: 'full'
-  },
-  { path: '**', component: PageNotFoundComponent }
-];
+const routes: Routes = [{
+path: 'admin',
+canActivate: [CanActivateViaAuthGuard],
+children: [
+    {path: '', redirectTo: 'users', pathMatch: 'full'}, // empty path
+    {path: 'users', component: ViewUserComponent},
+    {path: 'users/edit/:id', component: EditUserComponent, resolve: {user: PersistUserResolverService}},
+    { path: '**', component: PageNotFoundComponent }
+]
+...
                 </code></pre>
+                <aside class="notes">
+                    UserResolverService lädt Userliste vor und leitet bei 'falscher' id zur Übersicht zurück.
+                </aside>
+            </section>
+            <section>
+
+            </section>
+            <section>
+                <h3>Angular Komponenten</h3>
+                <p class="fragment">
+                    <img src="./images/webwib_components.png">
+                </p>
+            </section>
+            <section>
+                <h3>Angular Komponenten</h3>
+                <p>Bestandteile:</p>
+                <ul>
+                    <li class="fragment">Template View (.html)</li>
+                    <li class="fragment">Data Source (.ts)</li>
+                    <li class="fragment">Component Styles (.css)</li>
+                </ul>
+            </section>
+            <section>
+                <h3>Angular Template Databinding</h3>
+                <table>
+                    <thead>
+                    <tr>
+                        <td>Richtung</td>
+                        <td>Syntax</td>
+                        <td>Typ</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>ts->html</td>
+                        <td>{{<span style="color:darkorchid">user</span>.<span style="color:darkorchid">name</span>}}, [<span
+                                style="color:darkorchid">disabled</span>]="<span
+                                style="color:darkorchid">isDisabled</span>"
+                        </td>
+                        <td>Einfügen, Attribut, Class, Style</td>
+                    </tr>
+                    <tr>
+                        <td>html->ts</td>
+                        <td>(<span style="color:darkorchid">click</span>)="<span
+                                style="color:darkorchid">sendForm</span>()"
+                        </td>
+                        <td>Event</td>
+                    </tr>
+                    <tr>
+                        <td>html<>ts</td>
+                        <td>[(<span style="color:darkorchid">ngModel</span>)]="<span
+                                style="color:darkorchid">user</span>"
+                        </td>
+                        <td>Two-Way</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </section>
+            <section>
+                <h3>new-user.component.html</h3>
+                <pre><code data-trim contenteditable>
+<p-panel *ngIf="user && groups && spots; else loading">
+    <ww-persist-user [user]="user"
+                     [groups]="groups"
+                     [spots]="spots"
+                     (save)="saveUser()">
+    </ww-persist-user>
+</p-panel>
+<ng-template #loading>Lade...</ng-template>
+                </code>
+                </pre>
+            </section>
+            <section>
+                <h3>new-user.component.ts</h3>
+                <pre><code data-trim contenteditable>
+class NewUserComponent implements OnInit {
+user: User;
+groups: Group[];
+spots: Spot[];
+
+constructor(private userService: UserService,
+            private groupService: GroupService,
+            private spotService: SpotService
+    ) {}
+
+ngOnInit(): void {
+    this.groupService.get().subscribe(groups => this.groups = groups);
+    this.spotService.get().subscribe(spots => this.spots = spots);
+}
+
+saveUser(): void {
+        this.userService.addUser(this.user);
+}
+}
+                </code></pre>
+            </section>
+            <section>
+                <h3>Dependency Injection & Services</h3>
+                <p class="fragment">DI: Entwurfsmuster: reglementiert die Abhängigkeiten eines Objekts zur Laufzeit</p>
+                <p class="fragment">DI überträgt Verantwortung für das Erzeugen und die Verknüpfung von Objekten an eine eigenständige Komponente</p>
             </section>
             <section>
                 <h3>Angular != UI</h3>
                 <p>--> https://angular.io/guide/architecture</p>
-                <p>TypeScript</p>
-                <p>Komponenten</p>
-                <p>Templates, (directives), data-binding</p>
                 <p>Services & Dependency Injection</p>
-                <p>Routing</p>
             </section>
             <section>
                 <h3>HttpClient: Senden & Entgegennehmen von Requests</h3>
             </section>
         </section>
         <section>
-            <h3>Transportschicht/Payload/REST</h3>
+            <h3>RESTful API / JSON</h3>
+            <p class="fragment"><img src="./images/03.png"></p>
+            <section>
+                <p></p>
+                <p></p>
+                <p></p>
+                <p></p>
+            </section>
         </section>
         <section>
-            <h3>Backend</h3>
-            <p>Allgemeine Aufgabe des Backends (Requests, Routing, Authentifizierung, ORM, MVC)</p>
-        </section>
-        <section>
-            <p>Idee: Übersichtsgrafik mit allgemeinen & Produktbezeichnungen</p>
+            <h3>Grails (Groovy on Rails)</h3>
+            <p class="fragment"><img src="./images/04.png"></p>
+            <section>
+                <p>URL Mapping</p>
+                <p>Controller</p>
+                <p>Domain</p>
+                <p>GORM</p>
+            </section>
         </section>
     </div>
 </div>
@@ -137,7 +239,7 @@ const appRoutes: Routes = [
         progress: true,
 
         // Display the page number of the current slide
-        slideNumber: false,
+        slideNumber: 'c/t',
 
         // Push each slide change to the browser history
         history: true,
