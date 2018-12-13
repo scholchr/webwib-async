@@ -28,32 +28,34 @@
 <div class="reveal">
     <div class="slides">
         <section>
+            <img src="./images/wordcloud.png">
+        </section>
+        <section>
             <h2>Fullstack in Webanwendungen</h2>
-            <p>https://www.wordclouds.com/</p>
         </section>
         <section>
             <h3>Fullstack?</h3>
-            <p class="fragment">SO Survey 2018</p>
-            <aside class="notes">
-                Notizen
-            </aside>
+            <p class="fragment">Frontend + Backend = Full Stack Entwickler</p>
+            <p class="fragment">laut StackOverflow Umfrage: jeder 2. Entwickler (48,2%)</p>
         </section>
         <section>
             <h3>Überblick</h3>
             <section>
-                <p class="fragment"><img src="./images/01.png"></p>
+                <img src="./images/01.png">
             </section>
         </section>
         <section>
             <section>
                 <h3>Angular (& TypeScript)</h3>
-                <p class="fragment"><img src="./images/02.png"></p>
+                <img src="./images/02.png">
             </section>
             <section>
-                <h1>RoutingModule</h1>
-                <p class="fragment">Zeigt zu der zugehörigen URL die passende Komponente an</p>
-                <p class="fragment">Überprüft Zugriffsrecht</p>
-                <p class="fragment">Leitet ggf. weiter</p>
+                <h3>RoutingModule</h3>
+                <ul>
+                    <li class="fragment">Zeigt zu der zugehörigen URL die passende Komponente an</li>
+                    <li class="fragment">Überprüft Zugriffsrecht</li>
+                    <li class="fragment">Leitet weiter</li>
+                </ul>
             </section>
             <section>
                 <h3>RoutingModule</h3>
@@ -89,6 +91,7 @@ children: [
                     <li class="fragment">Template View (.html)</li>
                     <li class="fragment">Data Source (.ts)</li>
                     <li class="fragment">Component Styles (.css)</li>
+                    <li class="fragment">Component Test (.spec.ts)</li>
                 </ul>
             </section>
             <section>
@@ -130,16 +133,20 @@ children: [
             <section>
                 <h3>new-user.component.html</h3>
                 <pre><code data-trim contenteditable>
-<p-panel *ngIf="user && groups && spots; else loading">
-    <ww-persist-user [user]="user"
-                     [groups]="groups"
-                     [spots]="spots"
-                     (save)="saveUser()">
-    </ww-persist-user>
-</p-panel>
-<ng-template #loading>Lade...</ng-template>
+&lt;p-panel *ngIf=&quot;user &amp;&amp; groups &amp;&amp; spots; else loading&quot;&gt;
+    &lt;ww-persist-user [user]=&quot;user&quot;
+                     [groups]=&quot;groups&quot;
+                     [spots]=&quot;spots&quot;
+                     (save)=&quot;saveUser()&quot;&gt;
+    &lt;/ww-persist-user&gt;
+&lt;/p-panel&gt;
+&lt;ng-template #loading&gt;Lade...&lt;/ng-template&gt;
                 </code>
                 </pre>
+                <aside class="notes">
+                    Directive: Strukturell: *ngFor, *ngIf
+                    Attributiv: <input [(ngModel)]="user.name">
+                </aside>
             </section>
             <section>
                 <h3>new-user.component.ts</h3>
@@ -166,38 +173,244 @@ saveUser(): void {
                 </code></pre>
             </section>
             <section>
-                <h3>Dependency Injection & Services</h3>
-                <p class="fragment">DI: Entwurfsmuster: reglementiert die Abhängigkeiten eines Objekts zur Laufzeit</p>
+                <h3>Dependency Injection </h3>
+                <p class="fragment">DI: Entwurfsmuster, reglementiert die Abhängigkeiten eines Objekts zur Laufzeit</p>
                 <p class="fragment">DI überträgt Verantwortung für das Erzeugen und die Verknüpfung von Objekten an eine eigenständige Komponente</p>
             </section>
             <section>
-                <h3>Angular != UI</h3>
-                <p>--> https://angular.io/guide/architecture</p>
-                <p>Services & Dependency Injection</p>
+                <h3></h3>
+                <pre><code data-trim contenteditable data-noescape>
+@Injectable()
+export class UserService {
+    private usersUrl = environment.apiUrl + 'user';
+
+    constructor(private http: HttpClient) {
+    }
+
+    get(): Observable&lt;any&gt; {
+        return this.http.get(this.usersUrl);
+    }
+
+    getUser(id: number | string, params?: UserParams): Observable&lt;any&gt; {
+        const options = { params: new HttpParams({ fromObject: params as any }) };
+        return this.http.get&lt;User&gt;(`${this.usersUrl}/${id}`, options);
+    }
+
+    addUser(user: User): Observable&lt;User&gt; {
+        delete user.id;
+        delete user.updateDateTime;
+        return this.http.post&lt;User&gt;(this.usersUrl, user);
+    }
+}
+                </code></pre>
             </section>
             <section>
-                <h3>HttpClient: Senden & Entgegennehmen von Requests</h3>
+                <h3>Rekapitulation</h3>
+                <img src="./images/angular_overview.png">
+            </section>
+            <section>
+                <h3>Angular: Sonstiges</h3>
+                <ul>
+                <li class="fragment">Angular != UI</li>
+                <li class="fragment">Formulare</li>
+                <li class="fragment">i18n</li>
+                </ul>
             </section>
         </section>
         <section>
-            <h3>RESTful API / JSON</h3>
-            <p class="fragment"><img src="./images/03.png"></p>
             <section>
-                <p></p>
-                <p></p>
-                <p></p>
-                <p></p>
+                <h3>RESTful API / JSON</h3>
+                <img src="./images/03.png">
+            </section>
+            <section>
+                <pre><code data-trim contenteditable data-noescape>
+POST /webwib-api/user
+Content-Type: application/json;charset=UTF-8
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.
+
+{
+    "firstName": "Christian",
+    "phone1": "164",
+    "birthday": "1982-09-04",
+    "email": "Christian.Scholten@hksinformatik.de",
+    "access": "FULL",
+    "password": "",
+    "groupLinks": [
+        {
+            "user": {},
+            "group": {
+                "id": 10084
+            }
+        }
+    ],
+    "ident": "ChS",
+    "name": "Scholten",
+    "defaultSpot": {
+        "id": 10005
+    }
+}
+                </code></pre>
+            </section>
+            <section>
+                <h3>Eigenschaften einer RESTful API</h3>
+                <ul>
+                    <li class="fragment">Zustandslosigkeit: alle Informationen, in sich geschlossen</li>
+                    <li class="fragment">Adressierbarkeit von Ressourcen</li>
+                    <li class="fragment">Repräsentationen zur Veränderung von Ressourcen</li>
+                </ul>
             </section>
         </section>
         <section>
-            <h3>Grails (Groovy on Rails)</h3>
-            <p class="fragment"><img src="./images/04.png"></p>
+
+        </section>
+        <section>
             <section>
-                <p>URL Mapping</p>
-                <p>Controller</p>
-                <p>Domain</p>
-                <p>GORM</p>
+                <h3>Grails (Groovy on Rails)</h3>
+                <img src="./images/04.png">
             </section>
+            <section>
+                <img src="./images/grails.png">
+            </section>
+            <section>
+                <h3>URL Mapping</h3>
+                <pre><code data-trim contenteditable data-noescape>
+static mappings = {
+    delete "/$controller/$id(.$format)?"(action:"delete")
+    get "/$controller(.$format)?"(action:"index")
+    get "/$controller/$id(.$format)?"(action:"show")
+    get "/user/me"(controller: "user", action: "me")
+    post "/$controller(.$format)?"(action:"save")
+    put "/$controller/$id(.$format)?"(action:"update")
+    patch "/$controller/$id(.$format)?"(action:"patch")
+
+    get "/stream/$controller(.$format)?"(action: 'stream')
+    post "/event/remote"(controller: 'snap', action: 'keyPointEvent')
+    post "/user-event/app-closed"(controller: 'snap', action: 'delete')
+
+    "/"(controller: 'application', action:'index')
+    "500"(view: '/error')
+    "404"(view: '/notFound')
+}
+                </code></pre>
+            </section>
+            <section>
+                <h3>Controller</h3>
+                <pre><code data-trim contenteditable data-noescape>
+@Secured(['isFullyAuthenticated()'])
+class UserController extends RestfulController {
+
+    static responseFormats = ['json', 'xml']
+
+    SpringSecurityService springSecurityService
+
+    UserController() {
+        super(User)
+    }
+
+    @Override
+    def index(Integer max) {
+        params.max = Math.min(max ?: 10, 100)
+        respond User.findAllByIdGreaterThan(-1, params)
+    }
+
+    def me() {
+        respond springSecurityService.getCurrentUser()
+    }
+}
+                </code></pre>
+
+            </section>
+            <section>
+                <h3>RestfulController</h3>
+                <img src="images/restful_controller.png">
+            </section>
+            <section>
+                <h3>User Domain (Model)</h3>
+                <pre><code data-trim contenteditable data-noescape>
+@GrailsCompileStatic
+class User extends BaseDomain {
+
+    Integer id
+    String firstName
+    String phone
+    String email
+    Spot defaultSpot
+    Date birthday
+    Integer color
+    String password
+    Permission access
+    Date activeUntil
+    Boolean isActive
+
+    static hasOne = [snap: Snap]
+
+    static hasMany = [
+        groupLinks: UserGroupLink,
+        observations: SnapObservation,
+        observers: SnapObservation
+    ]
+
+    static mappedBy = [
+        observations: 'user',
+        observers: 'targetUser'
+    ]
+}</code></pre>
+
+            </section>
+            <section>
+                <h3>User Domain (Model)</h3>
+                <pre><code data-trim contenteditable data-noescape>
+static mapping = {
+    defaultSpot column: 'SPTREF'
+    birthday type: 'date'
+    password column: 'PASS', sqlType: 'CHAR(32)'
+    access sqlType: 'SMALLINT', enumType: 'identity'
+    ...
+}
+
+static constraints = {
+    ident nullable: false, unique: true
+    name() nullable: true
+    firstName nullable: true
+    email nullable: true, email: true
+    defaultSpot()
+    password nullable: true, blank: true, password: true
+    ...
+}
+
+                </code></pre>
+            </section>
+            <section>
+                <h3>User View</h3>
+                <pre><code>
+model {
+    User user
+}
+
+final defaultExcludes = [
+        'defaultSpot',
+        'updateUser',
+        'snap',
+        'groupLinks',
+        'observations',
+        'observers'
+]
+
+final include = params.list('include')
+
+json g.render(user, [
+        excludes: ['password'] + (defaultExcludes - include)
+])
+                </code></pre>
+            </section>
+        </section>
+        <section>
+            <h3>Kompletter Full-Stack</h3>
+            <img src="./images/05.png">
+        </section>
+        <section>
+            <h1>Danke für die Aufmerksamkeit!</h1>
+            <h1>Fragen?</h1>
         </section>
     </div>
 </div>
